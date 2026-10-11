@@ -387,7 +387,10 @@ def startup_command(app_dir: Path) -> str:
     python = Path(sys.executable).resolve()
     pythonw = python.with_name("pythonw.exe")
     executable = pythonw if pythonw.is_file() else python
-    return subprocess.list2cmdline([str(executable), str(app_dir / "pig_pet.py")])
+    launcher = app_dir / "source-launcher" / "run.py"
+    if not launcher.is_file():
+        launcher = app_dir / "pig_pet.py"
+    return subprocess.list2cmdline([str(executable), str(launcher)])
 
 
 def set_autostart(enabled: bool, app_dir: Path) -> None:
@@ -2009,7 +2012,7 @@ class PigPet:
         result = self._current_pet_local_bounds()
         if self.permission_request is None:
             return result
-        bubble = self.permission_bubble_rect or (262, 160, 558, 348)
+        bubble = self.permission_bubble_rect or (196, 100, 604, 395)
         bubble_with_pointer = (
             bubble[0],
             bubble[1],
@@ -2387,55 +2390,55 @@ class PigPet:
                 draw.text((text_x, text_y), text, fill=fill, font=button_font)
 
         draw = ImageDraw.Draw(canvas, "RGBA")
-        title_font = load_ui_font(18, bold=True)
-        body_font = load_ui_font(14)
-        button_font = load_ui_font(15, bold=True)
+        title_font = load_ui_font(23, bold=True)
+        body_font = load_ui_font(19)
+        button_font = load_ui_font(19, bold=True)
 
         tool_name = str(request.get("tool_name", "Codex"))
         summary = str(request.get("summary", "Codex 正在请求权限"))
         tool_name = repair_mojibake_text(tool_name)
         summary = repair_mojibake_text(summary)
         detail = f"{tool_name}: {summary}" if tool_name else summary
-        lines = wrap_text_by_width(draw, detail, body_font, 248, 4)
+        lines = wrap_text_by_width(draw, detail, body_font, 372, 5)
 
-        left = 262
-        top = 160
-        right = 558
-        line_height = 20
-        button_height = 32
-        button_bottom_padding = 16
+        left = 196
+        top = 100
+        right = 604
+        line_height = 27
+        button_height = 44
+        button_bottom_padding = 18
         bubble_height = max(
-            138,
-            58 + line_height * max(1, len(lines)) + button_height + button_bottom_padding,
+            190,
+            72 + line_height * max(1, len(lines)) + button_height + button_bottom_padding,
         )
-        bottom = min(348, top + bubble_height)
+        bottom = min(395, top + bubble_height)
         rect = (left, top, right, bottom)
         self.permission_bubble_rect = rect
 
         shadow = (left + 3, top + 4, right + 3, bottom + 4)
-        draw.rounded_rectangle(shadow, radius=18, fill=(0, 0, 0, 82))
-        pointer = [(396, bottom - 2), (424, bottom - 2), (410, bottom + 22)]
+        draw.rounded_rectangle(shadow, radius=22, fill=(0, 0, 0, 82))
+        pointer = [(386, bottom - 2), (414, bottom - 2), (400, bottom + 22)]
         pointer_shadow = [(x + 2, y + 3) for x, y in pointer]
         draw.polygon(pointer_shadow, fill=(0, 0, 0, 62))
         draw.rounded_rectangle(
             rect,
-            radius=18,
+            radius=22,
             fill=(255, 250, 244, 242),
             outline=(236, 70, 142, 235),
             width=3,
         )
         draw.polygon(pointer, fill=(255, 250, 244, 242))
-        draw.line((398, bottom - 3, 422, bottom - 3), fill=(255, 250, 244, 255), width=4)
+        draw.line((388, bottom - 3, 412, bottom - 3), fill=(255, 250, 244, 255), width=4)
 
-        draw.text((left + 14, top + 12), "Codex 请求权限", fill=(48, 40, 42, 255), font=title_font)
-        text_y = top + 42
+        draw.text((left + 18, top + 15), "Codex 请求权限", fill=(48, 40, 42, 255), font=title_font)
+        text_y = top + 52
         for line in lines:
             draw.text((left + 18, text_y), line, fill=(76, 67, 70, 255), font=body_font)
             text_y += line_height
 
         button_top = bottom - button_height - button_bottom_padding
-        allow_rect = (left + 38, button_top, left + 130, button_top + button_height)
-        deny_rect = (right - 130, button_top, right - 38, button_top + button_height)
+        allow_rect = (left + 32, button_top, left + 160, button_top + button_height)
+        deny_rect = (right - 160, button_top, right - 32, button_top + button_height)
         self.permission_buttons = {"allow": allow_rect, "deny": deny_rect}
 
         pressed = self.permission_button_down

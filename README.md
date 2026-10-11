@@ -1,5 +1,57 @@
 # GooglePiggy Desktop Pet
 
+## 原作者与项目来源
+
+本仓库的修改基于 **[Myf-ricey](https://github.com/Myf-ricey)** 开发的
+**[GooglePiggy_DesktopPet](https://github.com/Myf-ricey/GooglePiggy_DesktopPet)**。
+原作者提供桌宠程序、动画资源、Codex Hook 与跨平台实现。本次修改基于上游
+`v0.3.2` 发布提交 `04f64049c7a01a034662c0485e58c475b0f3ff4b`。
+代码沿用上游 [MIT 许可证](LICENSE)，素材说明见 [ASSET-NOTICE.md](ASSET-NOTICE.md)。
+
+## 本次更新（2026-10-11）
+
+放大 Windows 版 Codex 权限请求气泡，使请求摘要和允许/拒绝按钮更容易阅读和点击。
+
+| 项目 | 原尺寸 | 更新后 |
+| --- | --- | --- |
+| 气泡宽度 | 296px | 408px |
+| 标题字号 | 18px | 23px |
+| 正文字号 | 14px | 19px |
+| 按钮字号 | 15px | 19px |
+| 按钮高度 | 32px | 44px |
+| 正文行距 | 20px | 27px |
+| 摘要最多显示行数 | 4 | 5 |
+
+气泡高度随正文行数调整，按钮热区、气泡指针和屏幕边缘定位范围同步更新。
+超过五行的摘要仍沿用上游省略显示规则。
+
+新增 `source-launcher/run.py`，支持从源码启动，并在载入桌宠目录前加载系统 Python
+依赖，避免便携目录中的其他 Python 版本 `.pyd` 文件发生冲突。
+手动启动脚本和源码模式自启动均支持这个入口；启动脚本支持通过
+`GOOGLEPIGGY_PYTHON` 指定解释器，无需写死个人目录或 Anaconda 路径。
+
+### 使用更新后的源码版
+
+安装 Python 3.11+，在仓库目录运行：
+
+```powershell
+python -m pip install -r requirements.txt
+python .\source-launcher\run.py
+```
+
+也可以运行 `start-pig-pet.cmd`。若解释器不在 PATH 中，可先设置
+`GOOGLEPIGGY_PYTHON` 为你本机 `pythonw.exe` 的完整路径。
+重新启动桌宠即可载入界面更新，已配置的 Codex Hook 可继续使用。
+
+仓库 `releases/` 中的 ZIP 是上游发布包，**未包含本次界面修改**。
+本次验证环境中的 Windows 应用控制策略阻止运行本机重打包的 EXE，因此实际安装
+使用已有 Anaconda Python 的源码模式；可执行文件的构建方式仍见下方上游说明。
+
+验证：修改后的 0.3.2 源码通过动画/manifest QA 和 `tools/smoke_test.py`；本机源码
+模式启动后心跳持续更新，权限气泡预览成功返回 `allow`。
+
+## 上游项目说明
+
 一只会陪你和 Codex 一起工作的 Windows / macOS 桌面小猪。它会根据 Codex 的
 状态切换动作，也能在你暂时不需要它时悄悄躲进屏幕边缘。
 
